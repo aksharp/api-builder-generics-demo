@@ -1,0 +1,68 @@
+{
+  "name": "lib",
+  "description": "Lib API",
+
+  "unions": {
+    "job_error": {
+      "discriminator": "discriminator",
+      "types": [
+        { "type": "job_database_error" },
+        { "type": "job_generic_error" }
+      ]
+    }
+  },
+
+  "models": {
+    "job_instance": {
+      "types": [
+        { "type": "J" },
+        { "type": "I" },
+        { "type": "O" },
+        { "type": "E", "upper_bound": "job_error" }
+      ],
+      "fields": [
+        { "name": "id", "type": "string" },
+        { "name": "key", "type": "string" },
+        { "name": "job", "type": "J" },
+        { "name": "input", "type": "I", "required": false },
+        { "name": "output", "type": "O", "required": false },
+        { "name": "errors", "type": "[E]", "required": false }
+      ]
+    },
+
+    "job_instance_form": {
+      "types": [
+        { "type": "J" },
+        { "type": "I" },
+        { "type": "O" },
+        { "type": "E", "upper_bound": "job_error" }
+      ],
+      "fields": [
+        { "name": "key", "type": "string" },
+        { "name": "job", "type": "J" },
+        { "name": "input", "type": "I", "required": false },
+        { "name": "output", "type": "O", "required": false },
+        { "name": "errors", "type": "[E]", "required": false }
+      ]
+    },
+
+    "job_database_error": {
+      "fields": [
+        { "name": "database_name", "type": "string" },
+        { "name": "database_action", "type": "string" },
+        { "name": "error_message", "type": "string" }
+      ]
+    },
+
+    "job_generic_error": {
+      "fields": [
+        { "name": "error_message", "type": "string" }
+      ]
+    }
+
+  }
+}
+
+
+
+

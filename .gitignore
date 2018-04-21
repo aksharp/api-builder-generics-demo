@@ -1,0 +1,14 @@
+target/
+project/target
+dist/*
+logs/
+.ivy2
+.lib/
+.cache
+.history
+*.class
+*.log
+*.swp
+*.swo
+.DS_STORE
+.idea

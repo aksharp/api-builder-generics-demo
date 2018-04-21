@@ -1,0 +1,51 @@
+{
+  "name": "generator-jobs",
+  "models": {
+    "job_instance": {
+      "fields": [
+        { "name": "id", "type": "string" },
+        { "name": "key", "type": "string" },
+        { "name": "job", "type": "object",
+          "description": "serialized json object of the job type from the api model" },
+        { "name": "input", "type": "object",
+          "description": "serialized json object of the job_instance_input type from the api model", "required": false},
+        { "name": "output", "type": "object",
+          "description": "serialized json object of the job_instance_output type from the api model", "required": false},
+        { "name": "errors", "type": "[object]",
+          "description": "serialized json array of job_error from the api model", "required": false}
+      ],
+      "attributes": [
+        {
+          "name": "scala",
+          "value": {
+            "package": "db.generated",
+            "id_generator": {
+              "prefix": "job"
+            }
+          }
+        },
+        {
+          "name": "psql",
+          "value": {
+            "pkey": "id",
+            "object_auto_fields": [
+              "created_at",
+              "updated_at"
+            ],
+            "indexes": [
+              {
+                "fields": [
+                  "job"
+                ]
+              }
+            ],
+            "journal": {
+              "interval": "monthly",
+              "retention": 6
+            }
+          }
+        }
+      ]
+    }
+  }
+}

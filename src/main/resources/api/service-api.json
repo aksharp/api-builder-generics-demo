@@ -1,0 +1,50 @@
+{
+  "name": "service",
+  "description": "Service API",
+
+  "imports": [
+    { "uri": "https://app.apibuilder.io/flow/lib-job/latest/service.json" }
+  ],
+
+  "enums": {
+    "job": {
+      "values": [
+        { "name": "my_daily_etl_job" },
+        { "name": "my_weekly_etl_job" },
+        { "name": "my_long_running_job" }
+      ]
+    }
+  },
+
+  "unions": {
+    "job_instance_input" : {
+      "discriminator": "discriminator",
+      "types": [
+        { "type": "day" }
+      ]
+    },
+    "job_instance_output" : {
+      "discriminator": "discriminator",
+      "types": [
+        { "type": "total_daily_revenue_by_organization" }
+      ]
+    }
+  },
+
+  "models": {
+    "day": {
+      "fields": [
+        { "name": "day", "type": "date-time-iso8601" }
+      ]
+    },
+
+    "total_daily_revenue_by_organization": {
+      "fields": [
+        { "name": "organization_id", "type": "string" },
+        { "name": "total_revenue", "type": "double" }
+      ]
+    }
+
+  }
+
+}
