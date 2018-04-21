@@ -2,7 +2,7 @@ package lib
 
 import scala.language.higherKinds
 
-trait Serde[A, B <: Serializable] {
+trait Serde[A, B] {
   def serialize: A => B
   def deserialize: B => Option[A]
 }

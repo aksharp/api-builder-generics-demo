@@ -60,7 +60,7 @@ package lib.generated {
       }
     }
 
-    def jsObjectJobInstance[J, I, O, E](obj: JobInstance[J, I, O, E])(
+    def jsObjectJobInstance[J, I, O, E <: JobError](obj: JobInstance[J, I, O, E])(
       implicit
       writesJ: play.api.libs.json.Writes[J],
       writesI: play.api.libs.json.Writes[I],
@@ -84,7 +84,7 @@ package lib.generated {
         })
     }
 
-    def jsObjectJobInstanceForm[J, I, O, E](obj: JobInstanceForm[J, I, O, E])(
+    def jsObjectJobInstanceForm[J, I, O, E <: JobError](obj: JobInstanceForm[J, I, O, E])(
       implicit
       writesJ: play.api.libs.json.Writes[J],
       writesI: play.api.libs.json.Writes[I],
@@ -107,14 +107,17 @@ package lib.generated {
     }
 
     implicit def jsonReadsExperimentEngineInternalJobInstance[J, I, O, E <: JobError](implicit
+      readsJ: play.api.libs.json.Reads[J],
       readsI: play.api.libs.json.Reads[I],
-      readsO: play.api.libs.json.Reads[O]
+      readsO: play.api.libs.json.Reads[O],
+      readsE: play.api.libs.json.Reads[E],
+      readsLE: play.api.libs.json.Reads[List[E]]
     ): play.api.libs.json.Reads[JobInstance[J, I, O, E]] = {
       (
         (__ \ "id").read[String] and
-          (__ \ "name").read[String] and
-          (__ \ "job_definition_id").read[String] and
-          (__ \ "input").read[I] and
+          (__ \ "key").read[String] and
+          (__ \ "job").read[J] and
+          (__ \ "input").readNullable[I] and
           (__ \ "output").readNullable[O] and
           (__ \ "error").readNullable[List[E]]
         ) (JobInstance[J, I, O, E] _)
