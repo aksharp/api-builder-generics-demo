@@ -288,15 +288,21 @@ package service.generated {
     // TODO: Add Serialization / Desearilzation for other enums / union types instances
 
     implicit val daySerializer: Serializer[Day, JsValue] = (a: Day) => Json.toJson[Day](a)
+    implicit val daySerializer1: Serializer[Option[Day], Option[JsValue]] = (a: Option[Day]) => a.map(b => Json.toJson[Day](b))
+
     implicit val dayDeserializer: Deserializer[Day, JsObject] = (b: JsObject) => b.as[Day]
     implicit val dayDeserializer1: Deserializer[Option[Day], Option[JsObject]] = (b: Option[JsObject]) => b.map(_.as[Day])
 
     implicit val myDailyEtlJobSerializer: Serializer[MyDailyEtlJob.type, JsValue] = (a: MyDailyEtlJob.type) => Json.toJson[MyDailyEtlJob.type](a)
     implicit val myDailyEtlJobDeserializer: Deserializer[MyDailyEtlJob.type, JsObject] = (b: JsObject) => b.as[MyDailyEtlJob.type]
 
+    implicit val totalDailyRevenueByOrganizationSerializer1: Serializer[Option[TotalDailyRevenueByOrganization], Option[JsValue]] =
+      (a: Option[TotalDailyRevenueByOrganization]) => a.map(b => Json.toJson[TotalDailyRevenueByOrganization](b))
     implicit val totalDailyRevenueByOrganizationDeserializer1: Deserializer[Option[TotalDailyRevenueByOrganization], Option[JsObject]] =
       (b: Option[JsObject]) => b.map(_.as[TotalDailyRevenueByOrganization])
 
+    implicit val jobErrorsSerializer1: Serializer[Option[List[JobError]], Option[List[JsValue]]] =
+      (a: Option[List[JobError]]) => a.map(b => b.map(c => Json.toJson[JobError](c)))
     implicit val jobErrorsDeserializer1: Deserializer[Option[List[JobError]], Option[List[JsObject]]] =
       (b: Option[List[JsObject]]) => b.map(_.map(_.as[JobError]))
   }

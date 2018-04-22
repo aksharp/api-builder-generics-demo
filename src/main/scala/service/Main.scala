@@ -68,16 +68,16 @@ object Main extends App {
    * Compile-time Type Check / Validation
    *  form accepted guaranteed to be validated for type: JobInstance[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError]
    */
-//  myDailyEtlJobDao.insert(
-//    user = UserReference("system"),
-//    form = JobInstanceForm(
-//      key = "key",
-//      job = MyDailyEtlJob,
-//      input = Option(Day(DateTime.now)),
-//      output = None,
-//      errors = None
-//    )
-//  )
+  myDailyEtlJobDao.insert(
+    user = UserReference("system"),
+    form = JobInstanceForm(
+      key = "key",
+      job = MyDailyEtlJob,
+      input = Option(Day(DateTime.now)),
+      output = None,
+      errors = None
+    )
+  )
 
   /*
    * Compile-time Type Check / Validation
