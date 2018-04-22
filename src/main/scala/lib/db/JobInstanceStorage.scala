@@ -3,7 +3,7 @@ package lib.db
 import io.flow.common.v0.models.UserReference
 import lib.db.generated.JobInstancesDao
 import lib.generated.models._
-import JobStorage._
+import JobInstanceStorage._
 import com.typesafe.config.ConfigFactory
 import lib.serde._
 import play.api.libs.json.{JsObject, JsValue}
@@ -12,10 +12,10 @@ import scala.language.implicitConversions
 import scala.util.Try
 
 //TODO: would be great if this can be generated
-object JobStorage {
+object JobInstanceStorage {
   private val databaseName = ConfigFactory.load().getString("db.name") // TODO: refactor
 
-  implicit def toJobInstanceForm[J, I, O, E <: JobError](form: JobInstanceForm[J, I, O, E])(
+  implicit def toDbJobInstanceForm[J, I, O, E <: JobError](form: JobInstanceForm[J, I, O, E])(
     implicit
     sj: Serializer[J, JsValue],
     si: Serializer[Option[I], Option[JsValue]],
@@ -28,6 +28,16 @@ object JobStorage {
       input= si.serialize(form.input),
       output = so.serialize(form.output),
       errors = se.serialize(form.errors)
+    )
+  }
+
+  implicit def toJobInstanceForm[J, I, O, E <: JobError](jobInstance: JobInstance[J, I, O, E]): JobInstanceForm[J, I, O, E] = {
+    JobInstanceForm(
+      key = jobInstance.key,
+      job = jobInstance.job,
+      input= jobInstance.input,
+      output = jobInstance.output,
+      errors = jobInstance.errors
     )
   }
 
@@ -61,7 +71,7 @@ object JobStorage {
   }
 }
 
-class JobStorage[J, I, O, E <: JobError](
+class JobInstanceStorage[J, I, O, E <: JobError](
   dao: JobInstancesDao
 ) {
 
@@ -70,14 +80,18 @@ class JobStorage[J, I, O, E <: JobError](
     sj: Serializer[J, JsValue],
     si: Serializer[Option[I], Option[JsValue]],
     so: Serializer[Option[O], Option[JsValue]],
-    se: Serializer[Option[List[E]], Option[List[JsValue]]]
-  ): Either[JobError, String] = {
+    se: Serializer[Option[List[E]], Option[List[JsValue]]],
+    dsj: Deserializer[J, JsObject],
+    dsi: Deserializer[Option[I], Option[JsObject]],
+    dso: Deserializer[Option[O], Option[JsObject]],
+    dse: Deserializer[Option[List[E]], Option[List[JsObject]]]
+  ): Either[JobError, JobInstance[J, I, O, E]] = {
     Try(dao.insert(
       updatedBy = user,
       form = form)
     ).fold(
       err => Left(JobDatabaseError(databaseName, s"insert job instance $form by user $user", err.getMessage)),
-      good => Right(good)
+      good => findById(good)
     )
   }
 
@@ -94,6 +108,25 @@ class JobStorage[J, I, O, E <: JobError](
       .getOrElse(
         Left(
           JobDatabaseError(databaseName, "find by id", s"job instance with id $id was not found")
+        )
+      )
+  }
+
+  def findLastIncomplete(key: String)(
+    implicit
+    dsj: Deserializer[J, JsObject],
+    dsi: Deserializer[Option[I], Option[JsObject]],
+    dso: Deserializer[Option[O], Option[JsObject]],
+    dse: Deserializer[Option[List[E]], Option[List[JsObject]]]
+  ): Either[JobError, JobInstance[J, I, O, E]] = {
+    dao
+      .findAll(limit = 1)(q =>
+        q.equals("key", key).orderBy("created_at desc"))
+      .headOption
+      .map(fromDbJobInstance[J, I, O, E])
+      .getOrElse(
+        Left(
+          JobDatabaseError(databaseName, "find last incomplete job instance", s"job instance with key $key was not found")
         )
       )
   }

@@ -14,14 +14,7 @@ import service.generated.json._
 import service.generated.models.Job._
 import service.generated.models._
 
-object Main extends App {
-
-  val jobRunner = new JobRunner[
-      MyDailyEtlJob.type ,
-      Day,
-      TotalDailyRevenueByOrganization,
-      JobError
-    ]
+object RecoverMain extends App {
 
   val config = ConfigFactory.load()
   val env = Environment.simple()
@@ -30,6 +23,15 @@ object Main extends App {
   val dao = new JobInstancesDao(db)
 
   val myDailyEtlJobDao = new JobInstanceStorage[MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError](dao)
+
+
+  val jobRunner = new JobRunner[
+    MyDailyEtlJob.type ,
+    Day,
+    TotalDailyRevenueByOrganization,
+    JobError
+    ]
+
 
   /*
   * Compile-time Type Check
