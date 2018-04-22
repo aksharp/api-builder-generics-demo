@@ -4,6 +4,7 @@ import io.flow.common.v0.models.UserReference
 import lib.db.generated.JobInstancesDao
 import lib.generated.models._
 import JobStorage._
+import com.typesafe.config.ConfigFactory
 import lib.serde._
 import play.api.libs.json.{JsObject, JsValue}
 
@@ -11,7 +12,7 @@ import scala.language.implicitConversions
 import scala.util.Try
 
 object JobStorage {
-  private val databaseName = "jobsDb"
+  private val databaseName = ConfigFactory.load().getString("db.name") // TODO: refactor
 
   implicit def toJobInstanceForm[J, I, O, E <: JobError](form: JobInstanceForm[J, I, O, E])(
     implicit

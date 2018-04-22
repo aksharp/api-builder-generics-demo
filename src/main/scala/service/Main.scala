@@ -2,11 +2,10 @@ package service
 
 import com.typesafe.config.ConfigFactory
 import io.flow.common.v0.models.UserReference
-import io.flow.user.v0.Constants
 import lib.JobRunner
 import lib.db.JobStorage
 import lib.db.generated.JobInstancesDao
-import lib.generated.models.{JobError, JobInstance, JobInstanceForm}
+import lib.generated.models.{JobError, JobInstanceForm}
 import org.joda.time.DateTime
 import play.api.Environment
 import play.api.db._
@@ -27,7 +26,7 @@ object Main extends App {
   val config = ConfigFactory.load()
   val env = Environment.simple()
   val pool = new HikariCPConnectionPool(env)
-  val db = new PooledDatabase("jobs", config, env, pool)
+  val db = new PooledDatabase(config.getString("db.name"), config, env, pool)
   val dao = new JobInstancesDao(db)
 
   val myDailyEtlJobDao = new JobStorage[MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError](dao)

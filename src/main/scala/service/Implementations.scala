@@ -10,7 +10,7 @@ object Implementations {
     MyDailyEtlJob.type => Day => Either[JobError, TotalDailyRevenueByOrganization]
     ) {
     override def apply(job: MyDailyEtlJob.type): Day => Either[JobError, TotalDailyRevenueByOrganization] = {
-      // dummy implementation (switch for real one)
+      // TODO: dummy implementation (switch for real one)
       job => Right(TotalDailyRevenueByOrganization("flow", 1234567.89))
     }
   }
