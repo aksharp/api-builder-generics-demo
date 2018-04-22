@@ -1,9 +1,7 @@
 package service.generated {
 
-  import cats.Functor
   import lib.generated.models.JobError
   import lib.serde.{Deserializer, Serializer}
-  import org.joda.time.DateTime
   import play.api.libs.json._
   import service.generated.models.Job.MyDailyEtlJob
 
@@ -130,18 +128,10 @@ package service.generated {
   }
 
   package object json {
-    import play.api.libs.json.__
-    import play.api.libs.json.JsString
-    import play.api.libs.json.Writes
-    import play.api.libs.functional.syntax._
-    import models._
     import lib.generated.json._
-
-    private[this] implicit val jsonReadsUUID = __.read[String].map(java.util.UUID.fromString)
-
-    private[this] implicit val jsonWritesUUID = new Writes[java.util.UUID] {
-      def writes(x: java.util.UUID) = JsString(x.toString)
-    }
+    import models._
+    import play.api.libs.functional.syntax._
+    import play.api.libs.json.{JsString, Writes, __}
 
     private[this] implicit val jsonReadsJodaDateTime = __.read[String].map { str =>
       import org.joda.time.format.ISODateTimeFormat.dateTimeParser
@@ -275,9 +265,12 @@ package service.generated {
       }
     }
 
-    //TODO: New Serialization / Desearilzation
+    //TODO: ---------------------------------------------------
+    //TODO: -----NEW SERIALIZATION / DESERIALIZATION-----------
+    //TODO: ---------------------------------------------------
 
 
+    // TODO: Add Serialization / Desearilzation for other enums / union types instances
     implicit val myDailyEtlJobReads = new Reads[MyDailyEtlJob.type] {
       override def reads(json: JsValue): JsResult[MyDailyEtlJob.type] = json match {
         case JsString(str) if str == "my_daily_etl_job" => play.api.libs.json.JsSuccess(MyDailyEtlJob)
@@ -285,26 +278,45 @@ package service.generated {
       }
     }
 
-    // TODO: Add Serialization / Desearilzation for other enums / union types instances
+    import cats.implicits._
+    import lib.serde.PlayJsonHelpers._
 
-    implicit val daySerializer: Serializer[Day, JsValue] = (a: Day) => Json.toJson[Day](a)
-    implicit val daySerializer1: Serializer[Option[Day], Option[JsValue]] = (a: Option[Day]) => a.map(b => Json.toJson[Day](b))
+    // -------------------
+    // Serialize Generics
+    // -------------------
 
-    implicit val dayDeserializer: Deserializer[Day, JsObject] = (b: JsObject) => b.as[Day]
-    implicit val dayDeserializer1: Deserializer[Option[Day], Option[JsObject]] = (b: Option[JsObject]) => b.map(_.as[Day])
+    // Option[Day]
+    implicit val daySerializerM: Serializer[Option[Day], Option[JsValue]] = (a: Option[Day]) => serializeM(a)
 
-    implicit val myDailyEtlJobSerializer: Serializer[MyDailyEtlJob.type, JsValue] = (a: MyDailyEtlJob.type) => Json.toJson[MyDailyEtlJob.type](a)
-    implicit val myDailyEtlJobDeserializer: Deserializer[MyDailyEtlJob.type, JsObject] = (b: JsObject) => b.as[MyDailyEtlJob.type]
+    // MyDailyEtlJob
+    implicit val myDailyEtlJobSerializer: Serializer[MyDailyEtlJob.type, JsValue] = (a: MyDailyEtlJob.type) => serialize(a)
 
-    implicit val totalDailyRevenueByOrganizationSerializer1: Serializer[Option[TotalDailyRevenueByOrganization], Option[JsValue]] =
-      (a: Option[TotalDailyRevenueByOrganization]) => a.map(b => Json.toJson[TotalDailyRevenueByOrganization](b))
-    implicit val totalDailyRevenueByOrganizationDeserializer1: Deserializer[Option[TotalDailyRevenueByOrganization], Option[JsObject]] =
-      (b: Option[JsObject]) => b.map(_.as[TotalDailyRevenueByOrganization])
+    // Option[TotalDailyRevenueByOrganization]
+    implicit val totalDailyRevenueByOrganizationSerializerM: Serializer[Option[TotalDailyRevenueByOrganization], Option[JsValue]] =
+      (a: Option[TotalDailyRevenueByOrganization]) => serializeM(a)
 
-    implicit val jobErrorsSerializer1: Serializer[Option[List[JobError]], Option[List[JsValue]]] =
-      (a: Option[List[JobError]]) => a.map(b => b.map(c => Json.toJson[JobError](c)))
-    implicit val jobErrorsDeserializer1: Deserializer[Option[List[JobError]], Option[List[JsObject]]] =
-      (b: Option[List[JsObject]]) => b.map(_.map(_.as[JobError]))
+    // Option[List[JobError]]
+    implicit val jobErrorsSerializerK: Serializer[Option[List[JobError]], Option[List[JsValue]]] = (a: Option[List[JobError]]) => serializeK(a)
+
+
+    // -------------------
+    // Deserialize Generics
+    // -------------------
+
+    // Option[Day]
+    implicit val dayDeserializerM: Deserializer[Option[Day], Option[JsObject]] = (b: Option[JsObject]) => deserializeM[Option, Day](b)
+
+    // MyDailyEtlJob
+    implicit val myDailyEtlJobDeserializer: Deserializer[MyDailyEtlJob.type, JsObject] = (b: JsObject) => deserialize[MyDailyEtlJob.type](b)
+
+    // Option[TotalDailyRevenueByOrganization]
+    implicit val totalDailyRevenueByOrganizationDeserializerM: Deserializer[Option[TotalDailyRevenueByOrganization], Option[JsObject]] =
+      (b: Option[JsObject]) => deserializeM[Option, TotalDailyRevenueByOrganization](b)
+
+    // Option[List[JobError]]
+    implicit val jobErrorsDeserializerK: Deserializer[Option[List[JobError]], Option[List[JsObject]]] =
+      (b: Option[List[JsObject]]) => deserializeK[Option, List, JobError](b)
+
   }
 
 }

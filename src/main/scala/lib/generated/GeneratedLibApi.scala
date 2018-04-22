@@ -65,14 +65,7 @@ package lib.generated {
     )
   }
 
-//  sealed trait JobError
-//
-//  case class JobDatabaseError(databaseName: String, databaseAction: String, errorMessage: String) extends JobError
-//
-//  case class JobGenericError(errorMessage: String) extends JobError
-
   package object json {
-    import cats.Functor
     import cats.implicits._
     import models._
     import play.api.libs.functional.syntax._
@@ -162,19 +155,9 @@ package lib.generated {
     }
 
 
-    /////////////
-
-
-
-    implicit def aToJsValue[A](value: A)
-      (implicit w: play.api.libs.json.Writes[A]): play.api.libs.json.JsValue = w.writes(value)
-
-    implicit def ma[M[_] : Functor, A](value: M[A])
-      (implicit w: play.api.libs.json.Writes[A]): M[play.api.libs.json.JsValue] = Functor[M].map(value)(w.writes)
-
-    implicit def ma2[M[_] : Functor, G[_] : Functor, A](value: M[G[A]])
-      (implicit w: play.api.libs.json.Writes[A]): M[G[play.api.libs.json.JsValue]] =
-      Functor[M].map(value)(g => ma[G, A](g))
+    //TODO: ---------------------------------------------------
+    //TODO: -----NEW SERIALIZATION / DESERIALIZATION-----------
+    //TODO: ---------------------------------------------------
 
     implicit def jsonWritesExperimentEngineInternalJobInstance[J, I, O, E <: JobError](implicit
       writesJ: play.api.libs.json.Writes[J],

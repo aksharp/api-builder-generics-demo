@@ -11,6 +11,7 @@ import play.api.libs.json.{JsObject, JsValue}
 import scala.language.implicitConversions
 import scala.util.Try
 
+//TODO: would be great if this can be generated
 object JobStorage {
   private val databaseName = ConfigFactory.load().getString("db.name") // TODO: refactor
 
@@ -66,10 +67,10 @@ class JobStorage[J, I, O, E <: JobError](
 
   def insert(user: UserReference, form: JobInstanceForm[J, I, O, E])(
     implicit
-    serdeJ: Serializer[J, JsValue],
-    serdeI: Serializer[Option[I], Option[JsValue]],
-    serdeO: Serializer[Option[O], Option[JsValue]],
-    serdeE: Serializer[Option[List[E]], Option[List[JsValue]]]
+    sj: Serializer[J, JsValue],
+    si: Serializer[Option[I], Option[JsValue]],
+    so: Serializer[Option[O], Option[JsValue]],
+    se: Serializer[Option[List[E]], Option[List[JsValue]]]
   ): Either[JobError, String] = {
     Try(dao.insert(
       updatedBy = user,
@@ -82,10 +83,10 @@ class JobStorage[J, I, O, E <: JobError](
 
   def findById(id: String)(
     implicit
-    serdeJ: Deserializer[J, JsObject],
-    serdeI: Deserializer[Option[I], Option[JsObject]],
-    serdeO: Deserializer[Option[O], Option[JsObject]],
-    serdeE: Deserializer[Option[List[E]], Option[List[JsObject]]]
+    dsj: Deserializer[J, JsObject],
+    dsi: Deserializer[Option[I], Option[JsObject]],
+    dso: Deserializer[Option[O], Option[JsObject]],
+    dse: Deserializer[Option[List[E]], Option[List[JsObject]]]
   ): Either[JobError, JobInstance[J, I, O, E]] = {
     dao
       .findById(id)
