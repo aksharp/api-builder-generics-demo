@@ -2,9 +2,9 @@ package lib.db
 
 import io.flow.common.v0.models.UserReference
 import lib.db.generated.JobInstancesDao
-import lib.generated._
+import lib.generated.models._
 import JobStorage._
-import lib.Serde
+import lib.serde._
 import play.api.libs.json.{JsObject, JsValue}
 
 import scala.language.implicitConversions
@@ -15,17 +15,17 @@ object JobStorage {
 
   implicit def toJobInstanceForm[J, I, O, E <: JobError](form: JobInstanceForm[J, I, O, E])(
     implicit
-    serdeJ: Serde[J, JsValue],
-    serdeI: Serde[Option[I], Option[JsValue]],
-    serdeO: Serde[Option[O], Option[JsValue]],
-    serdeE: Serde[Option[List[E]], Option[List[JsValue]]]
+    sj: Serializer[J, JsValue],
+    si: Serializer[Option[I], Option[JsValue]],
+    so: Serializer[Option[O], Option[JsValue]],
+    se: Serializer[Option[List[E]], Option[List[JsValue]]]
   ): lib.db.generated.JobInstanceForm = {
     lib.db.generated.JobInstanceForm(
       key = form.key,
-      job = Serde[J, JsValue].serialize(form.job),
-      input= Serde[Option[I], Option[JsValue]].serialize(form.input),
-      output = Serde[Option[O], Option[JsValue]].serialize(form.output),
-      errors = Serde[Option[List[E]], Option[List[JsValue]]].serialize(form.errors)
+      job = sj.serialize(form.job),
+      input= si.serialize(form.input),
+      output = so.serialize(form.output),
+      errors = se.serialize(form.errors)
     )
   }
 
@@ -34,18 +34,18 @@ object JobStorage {
    */
   implicit def fromDbJobInstance[J, I, O, E <: JobError](dbJobInstance: lib.db.generated.JobInstance)(
     implicit
-    serdeJ: Serde[J, JsObject],
-    serdeI: Serde[Option[I], Option[JsObject]],
-    serdeO: Serde[Option[O], Option[JsObject]],
-    serdeE: Serde[Option[List[E]], Option[List[JsObject]]]
+    dsj: Deserializer[J, JsObject],
+    dsi: Deserializer[Option[I], Option[JsObject]],
+    dso: Deserializer[Option[O], Option[JsObject]],
+    dse: Deserializer[Option[List[E]], Option[List[JsObject]]]
     ): Either[JobError, JobInstance[J, I, O, E]] = {
     (
-      Serde[J, JsObject].deserialize(dbJobInstance.job),
-      Serde[Option[I], Option[JsObject]].deserialize(dbJobInstance.input),
-      Serde[Option[O], Option[JsObject]].deserialize(dbJobInstance.output),
-      Serde[Option[List[E]], Option[List[JsObject]]].deserialize(dbJobInstance.errors)
+      dsj.deserialize(dbJobInstance.job),
+      dsi.deserialize(dbJobInstance.input),
+      dso.deserialize(dbJobInstance.output),
+      dse.deserialize(dbJobInstance.errors)
     ) match {
-      case (Some(job), Some(maybeInput), Some(maybeOutput), Some(maybeErrors)) =>
+      case (job, maybeInput, maybeOutput, maybeErrors) =>
         Right(JobInstance[J, I, O, E](
           id = dbJobInstance.id,
           key = dbJobInstance.key,
@@ -65,10 +65,10 @@ class JobStorage[J, I, O, E <: JobError](
 
   def insert(user: UserReference, form: JobInstanceForm[J, I, O, E])(
     implicit
-    serdeJ: Serde[J, JsValue],
-    serdeI: Serde[Option[I], Option[JsValue]],
-    serdeO: Serde[Option[O], Option[JsValue]],
-    serdeE: Serde[Option[List[E]], Option[List[JsValue]]]
+    serdeJ: Serializer[J, JsValue],
+    serdeI: Serializer[Option[I], Option[JsValue]],
+    serdeO: Serializer[Option[O], Option[JsValue]],
+    serdeE: Serializer[Option[List[E]], Option[List[JsValue]]]
   ): Either[JobError, String] = {
     Try(dao.insert(
       updatedBy = user,
@@ -81,10 +81,10 @@ class JobStorage[J, I, O, E <: JobError](
 
   def findById(id: String)(
     implicit
-    serdeJ: Serde[J, JsObject],
-    serdeI: Serde[Option[I], Option[JsObject]],
-    serdeO: Serde[Option[O], Option[JsObject]],
-    serdeE: Serde[Option[List[E]], Option[List[JsObject]]]
+    serdeJ: Deserializer[J, JsObject],
+    serdeI: Deserializer[Option[I], Option[JsObject]],
+    serdeO: Deserializer[Option[O], Option[JsObject]],
+    serdeE: Deserializer[Option[List[E]], Option[List[JsObject]]]
   ): Either[JobError, JobInstance[J, I, O, E]] = {
     dao
       .findById(id)

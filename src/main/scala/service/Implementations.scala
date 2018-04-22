@@ -1,7 +1,8 @@
 package service
 
-import lib.generated._
-import service.generated._
+import lib.generated.models._
+import service.generated.models._
+import service.generated.models.Job._
 
 object Implementations {
 

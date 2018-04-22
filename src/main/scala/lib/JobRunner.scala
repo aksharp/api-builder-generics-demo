@@ -1,6 +1,6 @@
 package lib
 
-import lib.generated.JobError
+import lib.generated.models.JobError
 
 class JobRunner[J, I, O, E <: JobError] {
   def run(job: J, jobInput: I)

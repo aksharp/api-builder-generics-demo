@@ -1,44 +1,173 @@
 package lib.generated {
+  
+  package models {
+    sealed trait JobError extends _root_.scala.Product with _root_.scala.Serializable
 
-  sealed trait JobError
+    /**
+      * Defines the valid discriminator values for the type JobError
+      */
+    sealed trait JobErrorDiscriminator extends _root_.scala.Product with _root_.scala.Serializable
 
-  case class JobDatabaseError(databaseName: String, databaseAction: String, errorMessage: String) extends JobError
+    object JobErrorDiscriminator {
 
-  case class JobGenericError(errorMessage: String) extends JobError
+      case object JobDatabaseError extends JobErrorDiscriminator { override def toString = "job_database_error" }
+      case object JobGenericError extends JobErrorDiscriminator { override def toString = "job_generic_error" }
 
-  case class JobInstance[J, I, O, E <: JobError](
-    id: String,
-    key: String,
-    job: J,
-    input: Option[I] = None,
-    output: Option[O] = None,
-    errors: Option[List[E]] = None
-  )
+      final case class UNDEFINED(override val toString: String) extends JobErrorDiscriminator
 
-  case class JobInstanceForm[J, I, O, E <: JobError](
-    key: String,
-    job: J,
-    input: Option[I] = None,
-    output: Option[O] = None,
-    errors: Option[List[E]] = None
-  )
+      val all: scala.List[JobErrorDiscriminator] = scala.List(JobDatabaseError, JobGenericError)
+
+      private[this] val byName: Map[String, JobErrorDiscriminator] = all.map(x => x.toString.toLowerCase -> x).toMap
+
+      def apply(value: String): JobErrorDiscriminator = fromString(value).getOrElse(UNDEFINED(value))
+
+      def fromString(value: String): _root_.scala.Option[JobErrorDiscriminator] = byName.get(value.toLowerCase)
+
+    }
+
+    final case class JobDatabaseError(
+      databaseName: String,
+      databaseAction: String,
+      errorMessage: String
+    ) extends JobError
+
+    final case class JobGenericError(
+      errorMessage: String
+    ) extends JobError
+
+    /**
+      * Provides future compatibility in clients - in the future, when a type is added
+      * to the union JobError, it will need to be handled in the client code. This
+      * implementation will deserialize these future types as an instance of this class.
+      *
+      * @param description Information about the type that we received that is undefined in this version of
+      *        the client.
+      */
+    final case class JobErrorUndefinedType(
+      description: String
+    ) extends JobError
+
+    case class JobInstance[J, I, O, E <: JobError](
+      id: String,
+      key: String,
+      job: J,
+      input: Option[I] = None,
+      output: Option[O] = None,
+      errors: Option[List[E]] = None
+    )
+
+    case class JobInstanceForm[J, I, O, E <: JobError](
+      key: String,
+      job: J,
+      input: Option[I] = None,
+      output: Option[O] = None,
+      errors: Option[List[E]] = None
+    )
+  }
+
+//  sealed trait JobError
+//
+//  case class JobDatabaseError(databaseName: String, databaseAction: String, errorMessage: String) extends JobError
+//
+//  case class JobGenericError(errorMessage: String) extends JobError
 
   package object json {
-
-    import play.api.libs.functional.syntax._
-    import play.api.libs.json.JodaReads._
-    import play.api.libs.json.Json._
-    import play.api.libs.json.__
+    import cats.Functor
     import cats.implicits._
-    import cats.{Functor}
+    import models._
+    import play.api.libs.functional.syntax._
+    import play.api.libs.json.Json._
+    import play.api.libs.json.{JsString, Writes, __}
 
     import scala.language.higherKinds
 
+    private[this] implicit val jsonReadsJodaDateTime = __.read[String].map { str =>
+      import org.joda.time.format.ISODateTimeFormat.dateTimeParser
+      dateTimeParser.parseDateTime(str)
+    }
+
+    private[this] implicit val jsonWritesJodaDateTime = new Writes[org.joda.time.DateTime] {
+      def writes(x: org.joda.time.DateTime) = {
+        import org.joda.time.format.ISODateTimeFormat.dateTime
+        val str = dateTime.print(x)
+        JsString(str)
+      }
+    }
+
+    private[this] implicit val jsonReadsJodaLocalDate = __.read[String].map { str =>
+      import org.joda.time.format.ISODateTimeFormat.dateParser
+      dateParser.parseLocalDate(str)
+    }
+
+    private[this] implicit val jsonWritesJodaLocalDate = new Writes[org.joda.time.LocalDate] {
+      def writes(x: org.joda.time.LocalDate) = {
+        import org.joda.time.format.ISODateTimeFormat.date
+        val str = date.print(x)
+        JsString(str)
+      }
+    }
+
+    implicit def jsonReadsJobInternalJobDatabaseError: play.api.libs.json.Reads[JobDatabaseError] = {
+      (
+        (__ \ "database_name").read[String] and
+          (__ \ "database_action").read[String] and
+          (__ \ "error_message").read[String]
+        )(JobDatabaseError.apply _)
+    }
+
+    def jsObjectJobDatabaseError(obj: JobDatabaseError): play.api.libs.json.JsObject = {
+      play.api.libs.json.Json.obj(
+        "database_name" -> play.api.libs.json.JsString(obj.databaseName),
+        "database_action" -> play.api.libs.json.JsString(obj.databaseAction),
+        "error_message" -> play.api.libs.json.JsString(obj.errorMessage)
+      )
+    }
+
+    implicit def jsonReadsJobInternalJobGenericError: play.api.libs.json.Reads[JobGenericError] = {
+      (__ \ "error_message").read[String].map { x => new JobGenericError(errorMessage = x) }
+    }
+
+    def jsObjectJobGenericError(obj: JobGenericError): play.api.libs.json.JsObject = {
+      play.api.libs.json.Json.obj(
+        "error_message" -> play.api.libs.json.JsString(obj.errorMessage)
+      )
+    }
+
+    implicit def jsonReadsJobInternalJobError: play.api.libs.json.Reads[JobError] = new play.api.libs.json.Reads[JobError] {
+      def reads(js: play.api.libs.json.JsValue): play.api.libs.json.JsResult[JobError] = {
+        (js \ "discriminator").asOpt[String].getOrElse { sys.error("Union[JobError] requires a discriminator named 'discriminator' - this field was not found in the Json Value") } match {
+          case "job_database_error" => js.validate[JobDatabaseError]
+          case "job_generic_error" => js.validate[JobGenericError]
+          case other => play.api.libs.json.JsSuccess(JobErrorUndefinedType(other))
+        }
+      }
+    }
+
+    def jsObjectJobError(obj: JobError): play.api.libs.json.JsObject = {
+      obj match {
+        case x: JobDatabaseError => jsObjectJobDatabaseError(x) ++ play.api.libs.json.Json.obj("discriminator" -> "job_database_error")
+        case x: JobGenericError => jsObjectJobGenericError(x) ++ play.api.libs.json.Json.obj("discriminator" -> "job_generic_error")
+        case other => {
+          sys.error(s"The type[${other.getClass.getName}] has no JSON writer")
+        }
+      }
+    }
+
+    implicit def jsonWritesJobInternalJobError: play.api.libs.json.Writes[JobError] = {
+      new play.api.libs.json.Writes[JobError] {
+        def writes(obj: JobError) = {
+          jsObjectJobError(obj)
+        }
+      }
+    }
+
+
+    /////////////
+
+
+
     implicit def aToJsValue[A](value: A)
       (implicit w: play.api.libs.json.Writes[A]): play.api.libs.json.JsValue = w.writes(value)
-
-//    implicit def optionAToJsValue[A](value: Option[A])
-//      (implicit w: play.api.libs.json.Writes[A]): Option[JsValue] = value.map(w.writes)
 
     implicit def ma[M[_] : Functor, A](value: M[A])
       (implicit w: play.api.libs.json.Writes[A]): M[play.api.libs.json.JsValue] = Functor[M].map(value)(w.writes)
