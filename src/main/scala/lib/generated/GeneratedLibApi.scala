@@ -231,8 +231,7 @@ package lib.generated {
       readsJ: play.api.libs.json.Reads[J],
       readsI: play.api.libs.json.Reads[I],
       readsO: play.api.libs.json.Reads[O],
-      readsE: play.api.libs.json.Reads[E],
-      readsLE: play.api.libs.json.Reads[List[E]]
+      readsE: play.api.libs.json.Reads[E]
     ): play.api.libs.json.Reads[JobInstance[J, I, O, E]] = {
       (
         (__ \ "id").read[String] and
