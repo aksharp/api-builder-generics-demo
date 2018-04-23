@@ -12,6 +12,7 @@ object MyDailyEtlJobRecoveryStrategyImpl extends AppStart {
 
   implicit object MyDailyEtlJobRecoveryStrategy extends RecoveryStrategy[
 
+    // types
     MyDailyEtlJob.type,
     Day,
     TotalDailyRevenueByOrganization,
@@ -24,15 +25,16 @@ object MyDailyEtlJobRecoveryStrategyImpl extends AppStart {
       input: Day
     ): Either[JobError, JobInstance[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError]] = {
 
-      // TODO: implement here (example: re-run the job to recover)
-      val jobRunner = new JobRunner[
+      // implementation (example: re-run the job to recover)
+      new JobRunner[
         MyDailyEtlJob.type,
         Day,
         TotalDailyRevenueByOrganization,
         JobError
-        ]
-
-      jobRunner.run(jobInstance.job, input)
+        ].run(
+          job = jobInstance.job,
+          jobInput = input
+        )
 
     }
   }
