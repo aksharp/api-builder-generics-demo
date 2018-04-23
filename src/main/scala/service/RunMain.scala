@@ -10,13 +10,20 @@ import service.generated.json._
 
 object RunMain extends AppStart {
 
-  val jobRunner = new JobRunner[
-    MyDailyEtlJob.type ,
+  new JobRunner[
+
+    // types
+    MyDailyEtlJob.type,
     Day,
     TotalDailyRevenueByOrganization,
     JobError
-    ]
 
-  jobRunner.run(MyDailyEtlJob, Day(DateTime.now))
+    ].run(
+
+      // values
+      job = MyDailyEtlJob,
+      jobInput = Day(DateTime.now)
+
+    )
 
 }

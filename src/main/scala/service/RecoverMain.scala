@@ -10,14 +10,22 @@ import service.job.strategies.MyDailyEtlJobRecoveryStrategyImpl._
 
 object RecoverMain extends AppStart {
 
-  val jobRecovery = new JobRecovery[
+  new JobRecovery[
+
+    // types
     MyDailyEtlJob.type,
     Day,
     TotalDailyRevenueByOrganization,
     JobError
-    ]
 
-  jobRecovery.recover(MyDailyEtlJob, "key", Day(DateTime.now))
+    ].recover(
+
+      // values
+      job = MyDailyEtlJob,
+      key ="key",
+      jobInput = Day(DateTime.now)
+
+    )
 
 
 }
