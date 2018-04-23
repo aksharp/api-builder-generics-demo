@@ -20,6 +20,8 @@ class JobRunner[J, I, O, E <: JobError] {
       so: Serializer[Option[O], Option[JsValue]],
       se: Serializer[Option[List[E]], Option[List[JsValue]]]
     ): Either[JobError, JobInstance[J, I, O, E]] =
+
+    // reusable implementation to pick up correct job run strategy
     runStrategy(job, jobInput)
 }
 
@@ -35,6 +37,8 @@ trait RunStrategy[J, I, O, E <: JobError] {
     so: Serializer[Option[O], Option[JsValue]],
     se: Serializer[Option[List[E]], Option[List[JsValue]]]
   ): Either[JobError, JobInstance[J, I, O, E]] = {
+
+    // reusable implementation for job instance database persistence
     for {
       newJobInstance <- dao.insert(UserReference("system"), newJobInstanceForm(job, input))
       ranJobInstance <- run(newJobInstance, input)
@@ -42,5 +46,6 @@ trait RunStrategy[J, I, O, E <: JobError] {
     } yield savedRecoveredJobInstance
   }
 
+  // override to specify what it means to run a job
   def run(jobInstance: JobInstance[J, I, O, E], input: I): Either[JobError, JobInstance[J, I, O, E]]
 }
