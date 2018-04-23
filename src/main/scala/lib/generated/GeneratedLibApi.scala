@@ -164,7 +164,11 @@ package lib.generated {
     //TODO: -----NEW SERIALIZATION / DESERIALIZATION-----------
     //TODO: ---------------------------------------------------
 
-    implicit def jsonWritesExperimentEngineInternalJobInstance[J, I, O, E <: JobError](implicit
+    // -------------------
+    // Serialize Generics
+    // -------------------
+
+    implicit def jsonWritesJobInstance[J, I, O, E <: JobError](implicit
       writesJ: play.api.libs.json.Writes[J],
       writesI: play.api.libs.json.Writes[I],
       writesO: play.api.libs.json.Writes[O],
@@ -223,7 +227,7 @@ package lib.generated {
         })
     }
 
-    implicit def jsonReadsExperimentEngineInternalJobInstance[J, I, O, E <: JobError](implicit
+    implicit def jsonReadsJobInstance[J, I, O, E <: JobError](implicit
       readsJ: play.api.libs.json.Reads[J],
       readsI: play.api.libs.json.Reads[I],
       readsO: play.api.libs.json.Reads[O],
