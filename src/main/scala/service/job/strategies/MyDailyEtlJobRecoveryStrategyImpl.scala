@@ -10,13 +10,21 @@ import service.generated.json._
 
 object MyDailyEtlJobRecoveryStrategyImpl extends AppStart {
 
-  implicit object MyDailyEtlJobRecoveryStrategy extends RecoveryStrategy[MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError] {
+  implicit object MyDailyEtlJobRecoveryStrategy extends RecoveryStrategy[
+
+    MyDailyEtlJob.type,
+    Day,
+    TotalDailyRevenueByOrganization,
+    JobError
+
+    ] {
 
     override def recover(
       jobInstance: JobInstance[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError],
       input: Day
     ): Either[JobError, JobInstance[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError]] = {
 
+      // TODO: implement here (example: re-run the job to recover)
       val jobRunner = new JobRunner[
         MyDailyEtlJob.type,
         Day,
@@ -24,7 +32,6 @@ object MyDailyEtlJobRecoveryStrategyImpl extends AppStart {
         JobError
         ]
 
-      // re-run the job to recover
       jobRunner.run(jobInstance.job, input)
 
     }
