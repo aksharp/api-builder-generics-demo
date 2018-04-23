@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import service.generated.models.Job._
 import service.generated.models._
 import service.job.strategies.MyDailyEtlJobRunStrategyImpl._
+import service.generated.json._
 
 object RunMain extends AppStart {
 

@@ -1,18 +1,18 @@
-package lib.db
+package lib.db.generated.generic
 
 import io.flow.common.v0.models.UserReference
 import lib.db.generated.JobInstancesDao
 import lib.generated.models._
-import JobInstanceStorage._
+import GeneratedGenericJobInstancesDao._
 import com.typesafe.config.ConfigFactory
-import lib.serde._
+import lib.util._
 import play.api.libs.json.{JsObject, JsValue}
 
 import scala.language.implicitConversions
 import scala.util.Try
 
 //TODO: would be great if this can be generated
-object JobInstanceStorage {
+object GeneratedGenericJobInstancesDao {
   private val databaseName = ConfigFactory.load().getString("db.name") // TODO: refactor
 
   implicit def toDbJobInstanceForm[J, I, O, E <: JobError](form: JobInstanceForm[J, I, O, E])(
@@ -41,6 +41,16 @@ object JobInstanceStorage {
     )
   }
 
+  def newJobInstanceForm[J, I, O, E <: JobError](job: J, input: I): JobInstanceForm[J, I, O, E] = {
+    JobInstanceForm[J, I, O, E](
+      key = "generate key here",
+      job = job,
+      input= Option(input),
+      output = None,
+      errors = None
+    )
+  }
+
   /* Note: this can be tested by just calling it with expected types and if it compiles, it is correct
       specific type serialization/deserialization can be tested on value level with unit tests
    */
@@ -50,7 +60,7 @@ object JobInstanceStorage {
     dsi: Deserializer[Option[I], Option[JsObject]],
     dso: Deserializer[Option[O], Option[JsObject]],
     dse: Deserializer[Option[List[E]], Option[List[JsObject]]]
-    ): Either[JobError, JobInstance[J, I, O, E]] = {
+  ): Either[JobError, JobInstance[J, I, O, E]] = {
     (
       dsj.deserialize(dbJobInstance.job),
       dsi.deserialize(dbJobInstance.input),
@@ -71,7 +81,7 @@ object JobInstanceStorage {
   }
 }
 
-class JobInstanceStorage[J, I, O, E <: JobError](
+class GeneratedGenericJobInstancesDao[J, I, O, E <: JobError](
   dao: JobInstancesDao
 ) {
 

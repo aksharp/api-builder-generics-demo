@@ -1,16 +1,16 @@
 package lib
 
 import io.flow.common.v0.models.UserReference
-import lib.db.JobInstanceStorage
-import lib.db.JobInstanceStorage._
+import lib.db.generated.generic.GeneratedGenericJobInstancesDao
+import lib.db.generated.generic.GeneratedGenericJobInstancesDao._
 import lib.generated.models.{JobError, JobInstance}
-import lib.serde.{Deserializer, Serializer}
+import lib.util.{Deserializer, Serializer}
 import play.api.libs.json.{JsObject, JsValue}
 
 class JobRecovery[J, I, O, E <: JobError] {
   def recover(job: J, key: String, jobInput: I)
     (implicit recoveryStrategy: RecoveryStrategy[J, I, O, E],
-              dao: JobInstanceStorage[J, I, O, E],
+              dao: GeneratedGenericJobInstancesDao[J, I, O, E],
               dsj: Deserializer[J, JsObject],
               dsi: Deserializer[Option[I], Option[JsObject]],
               dso: Deserializer[Option[O], Option[JsObject]],
@@ -25,7 +25,7 @@ class JobRecovery[J, I, O, E <: JobError] {
 
 trait RecoveryStrategy[J, I, O, E <: JobError] {
   def apply(job: J, key: String, input: I)(
-    implicit dao: JobInstanceStorage[J, I, O, E],
+    implicit dao: GeneratedGenericJobInstancesDao[J, I, O, E],
     dsj: Deserializer[J, JsObject],
     dsi: Deserializer[Option[I], Option[JsObject]],
     dso: Deserializer[Option[O], Option[JsObject]],

@@ -1,7 +1,7 @@
 package service
 
 import com.typesafe.config.ConfigFactory
-import lib.db.JobInstanceStorage
+import lib.db.generated.generic.GeneratedGenericJobInstancesDao
 import lib.db.generated.JobInstancesDao
 import lib.generated.models.JobError
 import play.api.Environment
@@ -16,6 +16,6 @@ trait AppStart extends App {
   val pool = new HikariCPConnectionPool(env)
   val db = new PooledDatabase(config.getString("db.name"), config, env, pool)
   val dao = new JobInstancesDao(db)
-  implicit val myDailyEtlJobDao: JobInstanceStorage[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError] = new JobInstanceStorage[MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError](dao)
+  implicit val myDailyEtlJobDao: GeneratedGenericJobInstancesDao[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError] = new GeneratedGenericJobInstancesDao[MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError](dao)
 
 }

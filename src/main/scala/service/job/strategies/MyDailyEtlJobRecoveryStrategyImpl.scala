@@ -2,11 +2,13 @@ package service.job.strategies
 
 import lib.generated.models._
 import lib.{JobRunner, RecoveryStrategy}
+import service.AppStart
 import service.generated.models.Job._
 import service.generated.models._
 import service.job.strategies.MyDailyEtlJobRunStrategyImpl._
+import service.generated.json._
 
-object MyDailyEtlJobRecoveryStrategyImpl {
+object MyDailyEtlJobRecoveryStrategyImpl extends AppStart {
 
   implicit object MyDailyEtlJobRecoveryStrategy extends RecoveryStrategy[MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError] {
 
@@ -22,6 +24,7 @@ object MyDailyEtlJobRecoveryStrategyImpl {
         JobError
         ]
 
+      // re-run the job to recover
       jobRunner.run(jobInstance.job, input)
 
     }

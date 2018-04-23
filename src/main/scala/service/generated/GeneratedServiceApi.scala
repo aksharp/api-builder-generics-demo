@@ -1,7 +1,7 @@
 package service.generated {
 
   import lib.generated.models.JobError
-  import lib.serde.{Deserializer, Serializer}
+  import lib.util.{Deserializer, Serializer}
   import play.api.libs.json._
   import service.generated.models.Job.MyDailyEtlJob
 
@@ -279,7 +279,7 @@ package service.generated {
     }
 
     import cats.implicits._
-    import lib.serde.PlayJsonHelpers._
+    import lib.util.PlayJsonHelpers._
 
     // -------------------
     // Serialize Generics

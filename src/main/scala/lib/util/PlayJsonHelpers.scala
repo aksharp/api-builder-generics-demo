@@ -1,4 +1,4 @@
-package lib.serde
+package lib.util
 
 import cats.Functor
 import play.api.libs.json._
