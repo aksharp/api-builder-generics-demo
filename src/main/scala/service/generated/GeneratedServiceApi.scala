@@ -283,10 +283,13 @@ package service.generated {
 
     // -------------------
     // Serialize Generics
+    //  (serialize concrete types that will be used in place of generics)
     // -------------------
 
     // Option[Day]
     implicit val daySerializerM: Serializer[Option[Day], Option[JsValue]] = (a: Option[Day]) => serializeM(a)
+    // Alternatively serializing specifically to Play Json
+    // implicit def daySerializer(maybeDay: Option[Day])(implicit w: Writes[Day]): Option[JsValue] = maybeDay.map(day => w.writes(day))
 
     // MyDailyEtlJob
     implicit val myDailyEtlJobSerializer: Serializer[MyDailyEtlJob.type, JsValue] = (a: MyDailyEtlJob.type) => serialize(a)
@@ -301,6 +304,7 @@ package service.generated {
 
     // -------------------
     // Deserialize Generics
+    //  (deserialize concrete types that will be used in place of generics)
     // -------------------
 
     // Option[Day]
