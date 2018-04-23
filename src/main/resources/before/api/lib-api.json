@@ -1,0 +1,46 @@
+{
+  "name": "lib-api",
+  "description": "Jobs Library",
+
+  "unions": {
+    "job_error": {
+      "discriminator": "discriminator",
+      "types": [
+        { "type": "job_database_error" },
+        { "type": "job_generic_error" }
+      ]
+    }
+  },
+
+  "models": {
+    "job_instance": {
+      "fields": [
+        { "name": "id", "type": "string" },
+        { "name": "key", "type": "string" },
+        { "name": "job", "type": "json" },
+        { "name": "input", "type": "json", "required": false },
+        { "name": "output", "type": "json", "required": false },
+        { "name": "errors", "type": "[json]", "required": false }
+      ]
+    },
+
+    "job_database_error": {
+      "fields": [
+        { "name": "database_name", "type": "string" },
+        { "name": "database_action", "type": "string" },
+        { "name": "error_message", "type": "string" }
+      ]
+    },
+
+    "job_generic_error": {
+      "fields": [
+        { "name": "error_message", "type": "string" }
+      ]
+    }
+
+  }
+}
+
+
+
+
