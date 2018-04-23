@@ -1,7 +1,5 @@
 package service.generated {
 
-  import lib.generated.models.JobError
-  import lib.util.{Deserializer, Serializer}
   import play.api.libs.json._
   import service.generated.models.Job.MyDailyEtlJob
 
@@ -128,7 +126,9 @@ package service.generated {
   }
 
   package object json {
-    import lib.generated.json._
+    import lib.util.{Deserializer, Serializer}
+    import cats.implicits._
+    import lib.util.PlayJsonHelpers._
     import models._
     import play.api.libs.functional.syntax._
     import play.api.libs.json.{JsString, Writes, __}
@@ -277,9 +277,6 @@ package service.generated {
         case other => play.api.libs.json.JsError(s"Undefined $other. Expected MyDailyEtlJob")
       }
     }
-
-    import cats.implicits._
-    import lib.util.PlayJsonHelpers._
 
     // -------------------
     // Serialize Generics
