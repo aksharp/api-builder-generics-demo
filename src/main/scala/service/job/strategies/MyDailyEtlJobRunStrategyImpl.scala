@@ -9,6 +9,7 @@ object MyDailyEtlJobRunStrategyImpl {
 
   implicit object MyDailyEtlJobRunStrategy extends RunStrategy[
 
+    // types
     MyDailyEtlJob.type,
     Day,
     TotalDailyRevenueByOrganization,
@@ -21,8 +22,12 @@ object MyDailyEtlJobRunStrategyImpl {
       input: Day
     ): Either[JobError, JobInstance[Job.MyDailyEtlJob.type, Day, TotalDailyRevenueByOrganization, JobError]] = {
 
-      // TODO: implement here
-      Right(JobInstance("id", "key", MyDailyEtlJob, Option(input), Option(TotalDailyRevenueByOrganization("flow", 1234567.89)), None))
+      // implementation
+      Right(
+        jobInstance.copy(
+          output = Option(TotalDailyRevenueByOrganization("flow", 1234567.89))
+        )
+      )
 
     }
   }
