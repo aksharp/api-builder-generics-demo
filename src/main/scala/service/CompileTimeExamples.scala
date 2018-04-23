@@ -9,7 +9,7 @@ import service.generated.models.Job._
 import service.generated.models._
 import service.job.strategies.MyDailyEtlJobRunStrategyImpl._
 
-object Main extends AppStart {
+object CompileTimeExamples extends AppStart {
 
   /* Define Job Runner with types
   *    will compile-time check correct run strategy
