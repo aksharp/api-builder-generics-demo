@@ -1,5 +1,7 @@
 package lib.generated {
-  
+
+  import play.api.libs.json.{JsObject, JsValue}
+
   package models {
     sealed trait JobError extends _root_.scala.Product with _root_.scala.Serializable
 
@@ -67,6 +69,9 @@ package lib.generated {
 
   package object json {
     import cats.implicits._
+    import lib.util.PlayJsonHelpers._
+    import lib.util.Serializer
+    import lib.util.Deserializer
     import models._
     import play.api.libs.functional.syntax._
     import play.api.libs.json.Json._
@@ -234,6 +239,25 @@ package lib.generated {
           (__ \ "error").readNullable[List[E]]
         ) (JobInstance[J, I, O, E] _)
     }
+
+    // -------------------
+    // Serialize Generics
+    //  (serialize concrete types that will be used in place of generics)
+    // -------------------
+
+    // E <: JobError = Error type
+    // Option[List[JobError]]
+    implicit val jobErrorsSerializerK: Serializer[Option[List[JobError]], Option[List[JsValue]]] = (a: Option[List[JobError]]) => serializeK(a)
+
+    // -------------------
+    // Deserialize Generics
+    //  (deserialize concrete types that will be used in place of generics)
+    // -------------------
+
+    // E <: JobError = Error type
+    // Option[List[JobError]]
+    implicit val jobErrorsDeserializerK: Deserializer[Option[List[JobError]], Option[List[JsObject]]] =
+      (b: Option[List[JsObject]]) => deserializeK[Option, List, JobError](b)
 
   }
 

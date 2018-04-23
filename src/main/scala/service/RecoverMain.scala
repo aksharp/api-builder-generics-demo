@@ -3,6 +3,7 @@ package service
 import lib.JobRecovery
 import lib.generated.models.JobError
 import org.joda.time.DateTime
+import lib.generated.json._
 import service.generated.json._
 import service.generated.models.Job._
 import service.generated.models._

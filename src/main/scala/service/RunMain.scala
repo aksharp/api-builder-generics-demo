@@ -7,6 +7,7 @@ import service.generated.models.Job._
 import service.generated.models._
 import service.job.strategies.MyDailyEtlJobRunStrategyImpl._
 import service.generated.json._
+import lib.generated.json._
 
 object RunMain extends AppStart {
 

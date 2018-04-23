@@ -286,20 +286,20 @@ package service.generated {
     //  (serialize concrete types that will be used in place of generics)
     // -------------------
 
+    // J = Job type
+    // MyDailyEtlJob
+    implicit val myDailyEtlJobSerializer: Serializer[MyDailyEtlJob.type, JsValue] = (a: MyDailyEtlJob.type) => serialize(a)
+
+    // Option[I] = Input type
     // Option[Day]
     implicit val daySerializerM: Serializer[Option[Day], Option[JsValue]] = (a: Option[Day]) => serializeM(a)
     // Alternatively serializing specifically to Play Json
     // implicit def daySerializer(maybeDay: Option[Day])(implicit w: Writes[Day]): Option[JsValue] = maybeDay.map(day => w.writes(day))
 
-    // MyDailyEtlJob
-    implicit val myDailyEtlJobSerializer: Serializer[MyDailyEtlJob.type, JsValue] = (a: MyDailyEtlJob.type) => serialize(a)
-
+    // Option[O] = Output type
     // Option[TotalDailyRevenueByOrganization]
     implicit val totalDailyRevenueByOrganizationSerializerM: Serializer[Option[TotalDailyRevenueByOrganization], Option[JsValue]] =
       (a: Option[TotalDailyRevenueByOrganization]) => serializeM(a)
-
-    // Option[List[JobError]]
-    implicit val jobErrorsSerializerK: Serializer[Option[List[JobError]], Option[List[JsValue]]] = (a: Option[List[JobError]]) => serializeK(a)
 
 
     // -------------------
@@ -307,19 +307,18 @@ package service.generated {
     //  (deserialize concrete types that will be used in place of generics)
     // -------------------
 
-    // Option[Day]
-    implicit val dayDeserializerM: Deserializer[Option[Day], Option[JsObject]] = (b: Option[JsObject]) => deserializeM[Option, Day](b)
-
+    // J = Job type
     // MyDailyEtlJob
     implicit val myDailyEtlJobDeserializer: Deserializer[MyDailyEtlJob.type, JsObject] = (b: JsObject) => deserialize[MyDailyEtlJob.type](b)
 
+    // Option[I] = Input type
+    // Option[Day]
+    implicit val dayDeserializerM: Deserializer[Option[Day], Option[JsObject]] = (b: Option[JsObject]) => deserializeM[Option, Day](b)
+
+    // Option[O] = Output type
     // Option[TotalDailyRevenueByOrganization]
     implicit val totalDailyRevenueByOrganizationDeserializerM: Deserializer[Option[TotalDailyRevenueByOrganization], Option[JsObject]] =
       (b: Option[JsObject]) => deserializeM[Option, TotalDailyRevenueByOrganization](b)
-
-    // Option[List[JobError]]
-    implicit val jobErrorsDeserializerK: Deserializer[Option[List[JobError]], Option[List[JsObject]]] =
-      (b: Option[List[JsObject]]) => deserializeK[Option, List, JobError](b)
 
   }
 

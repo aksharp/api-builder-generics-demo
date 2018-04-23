@@ -5,6 +5,7 @@ import lib.JobRunner
 import lib.generated.models.{JobError, JobInstanceForm}
 import org.joda.time.DateTime
 import service.generated.json._
+import lib.generated.json._
 import service.generated.models.Job._
 import service.generated.models._
 import service.job.strategies.MyDailyEtlJobRunStrategyImpl._
