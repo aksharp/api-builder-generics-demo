@@ -168,11 +168,12 @@ package lib.generated {
     // Serialize Generics
     // -------------------
 
-    implicit def jsonWritesJobInstance[J, I, O, E <: JobError](implicit
-      writesJ: play.api.libs.json.Writes[J],
-      writesI: play.api.libs.json.Writes[I],
-      writesO: play.api.libs.json.Writes[O],
-      writesE: play.api.libs.json.Writes[E]
+    implicit def jsonWritesJobInstance[J, I, O, E <: JobError](
+      implicit
+        writesJ: play.api.libs.json.Writes[J],
+        writesI: play.api.libs.json.Writes[I],
+        writesO: play.api.libs.json.Writes[O],
+        writesE: play.api.libs.json.Writes[E]
     ): play.api.libs.json.Writes[JobInstance[J, I, O, E]] = {
       new play.api.libs.json.Writes[JobInstance[J, I, O, E]] {
         def writes(obj: JobInstance[J, I, O, E]) = {
@@ -183,10 +184,10 @@ package lib.generated {
 
     def jsObjectJobInstance[J, I, O, E <: JobError](obj: JobInstance[J, I, O, E])(
       implicit
-      writesJ: play.api.libs.json.Writes[J],
-      writesI: play.api.libs.json.Writes[I],
-      writesO: play.api.libs.json.Writes[O],
-      writesE: play.api.libs.json.Writes[E]
+        writesJ: play.api.libs.json.Writes[J],
+        writesI: play.api.libs.json.Writes[I],
+        writesO: play.api.libs.json.Writes[O],
+        writesE: play.api.libs.json.Writes[E]
     ): play.api.libs.json.JsObject = {
       play.api.libs.json.Json.obj(
         "id" -> play.api.libs.json.JsString(obj.id)
@@ -207,10 +208,10 @@ package lib.generated {
 
     def jsObjectJobInstanceForm[J, I, O, E <: JobError](obj: JobInstanceForm[J, I, O, E])(
       implicit
-      writesJ: play.api.libs.json.Writes[J],
-      writesI: play.api.libs.json.Writes[I],
-      writesO: play.api.libs.json.Writes[O],
-      writesE: play.api.libs.json.Writes[E]
+        writesJ: play.api.libs.json.Writes[J],
+        writesI: play.api.libs.json.Writes[I],
+        writesO: play.api.libs.json.Writes[O],
+        writesE: play.api.libs.json.Writes[E]
     ): play.api.libs.json.JsObject = {
       play.api.libs.json.Json.obj(
         "job" -> obj.job
@@ -227,11 +228,12 @@ package lib.generated {
         })
     }
 
-    implicit def jsonReadsJobInstance[J, I, O, E <: JobError](implicit
-      readsJ: play.api.libs.json.Reads[J],
-      readsI: play.api.libs.json.Reads[I],
-      readsO: play.api.libs.json.Reads[O],
-      readsE: play.api.libs.json.Reads[E]
+    implicit def jsonReadsJobInstance[J, I, O, E <: JobError](
+      implicit
+        readsJ: play.api.libs.json.Reads[J],
+        readsI: play.api.libs.json.Reads[I],
+        readsO: play.api.libs.json.Reads[O],
+        readsE: play.api.libs.json.Reads[E]
     ): play.api.libs.json.Reads[JobInstance[J, I, O, E]] = {
       (
         (__ \ "id").read[String] and
