@@ -11,12 +11,13 @@ import service.generated.models.{Day, TotalDailyRevenueByOrganization}
 
 trait AppStart extends App {
 
+  // app setup
   val config = ConfigFactory.load()
   val env = Environment.simple()
   val pool = new HikariCPConnectionPool(env)
   val db = new PooledDatabase(config.getString("db.name"), config, env, pool)
 
-  // in central place and also required to be specified per
+  // compile time database storage guarantee
   implicit val myDailyEtlJobDao =
     new GeneratedGenericJobInstancesDao[
 
